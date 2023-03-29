@@ -1,7 +1,7 @@
 ﻿
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using QRCoder;
+using WebShare.Hubs;
+using Microsoft.AspNetCore.SignalR;
 
 namespace WebShare.Controllers
 {
@@ -9,27 +9,18 @@ namespace WebShare.Controllers
     [ApiController]
     public class ShareController : ControllerBase
     {
-        [HttpGet]
-        [Route($"{nameof(Await)}")]
-        public ContentResult Await()
+        private IHubContext<ShareHub> _shareHubContext;
+
+        public ShareController(IHubContext<ShareHub> shareHubContext)
         {
-            Guid guid = Guid.NewGuid();
-            QRCodeGenerator qRCodeGenerator = new QRCodeGenerator();
-            QRCodeData qRCodeData = qRCodeGenerator.CreateQrCode(guid.ToString(), QRCodeGenerator.ECCLevel.Q);
-            BitmapByteQRCode qrCode = new BitmapByteQRCode(qRCodeData);
-            byte[] bytes = qrCode.GetGraphic(20);
-            return new ContentResult
-            {
-                Content = $"<html><img src='data:image/bmp;base64,{Convert.ToBase64String(bytes)}'></img></html>",
-                ContentType = "text/html" ,
-            };
+            _shareHubContext = shareHubContext;
         }
 
         [HttpGet]
         [Route($"{nameof(Share)}")]
-        public string Share([FromQuery] string id, [FromQuery] string url)
+        public void Share([FromQuery] string id, [FromQuery] string url)
         {
-            return $"id: {id} url: {url}";
+            _shareHubContext.Clients.Client(id).SendAsync("ReceiveMessage", url);
         }
     }
 }
