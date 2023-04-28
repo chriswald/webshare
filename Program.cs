@@ -24,6 +24,14 @@ namespace WebShare
             {
                 FileProvider = new PhysicalFileProvider(
                     Path.Combine(Directory.GetCurrentDirectory(), "BrowserExtension")),
+                RequestPath = "",
+                EnableDefaultFiles = true
+            });
+
+            app.UseFileServer(new FileServerOptions
+            {
+                FileProvider = new PhysicalFileProvider(
+                    Path.Combine(Directory.GetCurrentDirectory(), "BrowserExtension")),
                 RequestPath = "/BrowserExtension",
                 EnableDefaultFiles = true
             });
