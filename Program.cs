@@ -18,8 +18,6 @@ namespace WebShare
 
             // Configure the HTTP request pipeline.
 
-            app.UseHttpsRedirection();
-
             app.UseAuthorization();
 
             app.UseFileServer(new FileServerOptions
