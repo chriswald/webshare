@@ -1,11 +1,24 @@
 "use strict";
 
 addEventListener("DOMContentLoaded", (event) => {
-    var connection = new signalR.HubConnectionBuilder().withUrl("/sharehub").build();
+    let connection = new signalR.HubConnectionBuilder().withUrl("/sharehub").build();
 
     connection.on("ReceiveMessage", function (url) {
         console.log("Receive " + url);
-        window.open(url, '_blank');
+
+        let a = document.createElement("a");
+        a.href = url;
+        a.target = "_blank";
+        a.innerText = url;
+
+        document.getElementById("link").innerHTML = "";
+        document.getElementById("link").appendChild(a);
+
+        let newTab = window.open(url, "_blank");
+
+        if (newTab === null) {
+            window.location.href = url;
+        }
     });
 
     connection.start()
@@ -14,7 +27,7 @@ addEventListener("DOMContentLoaded", (event) => {
             return console.error(err.toString());
         });
 
-    var getConnectionId = () => {
+    let getConnectionId = () => {
         console.log("get connection ID");
         connection.invoke('GetConnectionId')
             .then((data) => {
